@@ -1,0 +1,50 @@
+Vagrant.configure("2") do |config|
+config.vm.provision "shell", inline: "apt-get update && apt-get install -y telnet bash-completion wget curl vim ntp && sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config && systemctl restart sshd && grep -qxF 'source /etc/profile.d/bash_completion.sh' ~/.bashrc | echo 'source /etc/profile.d/bash_completion.sh' >> ~/.bashrc"
+config.vm.synced_folder ".", "/home/vagrant/synced_folder", :mount_options => ["dmode=777", "fmode=666"]
+  config.vm.define "puppetm" do |puppetm|
+    puppetm.vm.box = "ubuntu/bionic64"
+    puppetm.vm.hostname = 'puppetm'
+    puppetm.vm.network :private_network, ip: "192.168.10.20"
+    puppetm.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+      v.customize ["modifyvm", :id, "--memory", 2048]
+      v.customize ["modifyvm", :id, "--cpus", 2]
+      v.customize ["modifyvm", :id, "--name", "puppetm"]
+  end
+end
+
+
+  config.vm.define "puppets" do |puppets|
+    puppets.vm.box = "ubuntu/bionic64"
+    puppets.vm.hostname = 'puppets'
+    puppets.vm.network :private_network, ip: "192.168.10.21"
+    puppets.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+      v.customize ["modifyvm", :id, "--memory", 1024]
+      v.customize ["modifyvm", :id, "--name", "puppets"]
+    end
+  end
+
+  config.vm.define "puppets1" do |puppets1|
+    puppets1.vm.box = "ubuntu/bionic64"
+    puppets1.vm.hostname = 'puppets1'
+    puppets1.vm.network :private_network, ip: "192.168.10.22"
+    puppets1.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+      v.customize ["modifyvm", :id, "--memory", 1024]
+      v.customize ["modifyvm", :id, "--name", "puppets1"]
+    end
+  end
+
+  config.vm.define "puppets2" do |puppets2|
+    puppets2.vm.box = "ubuntu/bionic64"
+    puppets2.vm.hostname = 'puppets1'
+    puppets2.vm.network :private_network, ip: "192.168.10.23"
+    puppets2.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+      v.customize ["modifyvm", :id, "--memory", 1024]
+      v.customize ["modifyvm", :id, "--name", "puppets2"]
+    end
+  end
+
+end
